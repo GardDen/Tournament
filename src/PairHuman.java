@@ -1,26 +1,32 @@
 /**
- * Класс представляет пару участников, которые будет соревноваться друг с другом
+ * Класс представляет пару участников Human, которые будет соревноваться друг с другом
  * Created by 1 on 02.01.2018.
  */
 public class PairHuman {
     private Human human1;
     private Human human2;
     boolean win = false;
+    private Tournament tournament;
 
-    public PairHuman(Human human1, Human human2) {
+    public PairHuman(Human human1, Human human2, Tournament tournament) {
         this.human1 = human1;
         this.human2 = human2;
+        this.tournament = tournament;
         human1.setCurrentScoreOfRound(0);
         human2.setCurrentScoreOfRound(0);
     }
 
+    /**
+     * Запускает процесс раунда между двумя участниками.
+     */
     public void play() {
         int round = 1;
         while (!isWin()) {
             int score;
             System.out.println("Раунд " + round + "." + this);
             if (human2 instanceof Bot) {
-                human1.wonTheRound();
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                human1.addPoint();
                 win = true;
             } else {
                 while ((score = ConsoleHelper.readInt("Введите цифру 1, если победил первый боец, иначе введите 0:")) != 0
@@ -28,9 +34,9 @@ public class PairHuman {
                     System.out.println("Неверный ввод результата раунда.");
                 }
                 if (score == 1) {
-                    human1.wonTheRound();
+                    human1.addPoint();
                 } else {
-                    human2.wonTheRound();
+                    human2.addPoint();
                 }
             }
             round++;
@@ -40,11 +46,12 @@ public class PairHuman {
     }
 
     /**
-     * @return true если пара достисгла условия победы
+     * @return true если один из участников раунда достиг необходимого количества побед ROUND_FOR_WIN.
+     * @see Tournament  - ROUND_FOR_WIN
      */
     public boolean isWin() {
-        if (win || human1.getCurrentScoreOfRound() == Tournament.NUMBER_ROUND_FOR_WIN
-                || human2.getCurrentScoreOfRound() == Tournament.NUMBER_ROUND_FOR_WIN) {
+        if (win || human1.getCurrentScoreOfRound() == tournament.getROUND_FOR_WIN()
+                || human2.getCurrentScoreOfRound() == tournament.getROUND_FOR_WIN()) {
             return true;
         } else return false;
     }

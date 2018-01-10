@@ -3,6 +3,7 @@ import java.util.Map;
 
 /**
  * Created by 1 on 02.01.2018.
+ * Участник.
  */
 public class Human implements Comparable {
     protected String name;
@@ -17,13 +18,15 @@ public class Human implements Comparable {
         this.name = name;
     }
 
-
-
+    /**
+     * Добавляет очки набранные во время встречи с другим участником.
+     * @param currentScoreOfRound
+     */
     public void addScores(int currentScoreOfRound) {
         score += currentScoreOfRound;
     }
 
-    public void wonTheRound() {
+    public void addPoint() {
         currentScoreOfRound++;
     }
 
@@ -63,14 +66,5 @@ public class Human implements Comparable {
 
     public void setCurrentScoreOfRound(int currentScoreOfRound) {
         this.currentScoreOfRound = currentScoreOfRound;
-    }
-
-
-    public int getScore() {
-        return score;
-    }
-
-    public Map<Human, Boolean> getMap() {
-        return map;
     }
 }

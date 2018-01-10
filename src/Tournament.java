@@ -4,82 +4,117 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Task:
+ * 1 бонусный бал сколько?  метод play
+ * 2 GUI
+ * 3 Удаление людей во время турнира.
+ *
  * Created by 1 on 02.01.2018.
+ * Соревновения проходят на подобие швейцарской системы в MAX_TOUR туров.
+ * Участники Human встречаются и между ними проводятся раунды, пока один из участников не наберет нужного
+ * числа побед ROUND_FOR_WIN. В случае победы в раунде участнику начисляется одно очко, при поражении 0 очков.
+ * <p>
+ *     В каждом туре генерируются пары участников PairHuman на основе их количества очков.
+ *     Два участника встречаются между собой лишь однажды.
+ * </p>
+ *
+ * Чем больше значение MAX_TOUR, тем выше эффективность определения рейтинга участников соревнования.
+ *
+ * @see Human
+ * @see PairHuman
+ *
  */
 public class Tournament {
-    public final static int NUMBER_ROUND_FOR_WIN = 2;
-    private final int MAX_TOUR = 4;// для конкретного турнира берем 4 тура, так как на 5 туров времени может не хватить
-    //в то же время 4 туров должно быть достаточно для составления общего рейтинга
+    private final int ROUND_FOR_WIN = 2;
+    private final int MAX_TOUR = 4;
+
     private int countPlayedPair = 0;
     private int tour;
     private String name;
     private Date date;
-    private List<Human> listHumans;
-    private List<PairHuman> listPairs = new ArrayList<>();
+    private List<Human> humans;
+    private List<PairHuman> pairs = new ArrayList<>();
     
     public Tournament(String name) {
         this.name = name;
         date = new Date();
         tour = 1;
-        initMapHumans(ConsoleHelper.readInt("Введите число участников турнира: "));
+        initHumans(ConsoleHelper.readInt("Введите число участников турнира: "));
     }
 
-    public void initMapHumans(int countHumans) {
-        listHumans = new ArrayList<>(countHumans);
+    /**
+     * Инициализирует список участников соревнования.
+     * @param countHumans
+     */
+    public void initHumans(int countHumans) {
+        humans = new ArrayList<>(countHumans);
         for (int i = 0; i < countHumans; i++) {
             addHuman("Введите имя(фамилию и имя) участника турнира: ");
         }
     }
 
+    /**
+     * Запрашивает данные участника и добавляет его в список участников соревнования, если там его ещё нет.
+     * @param info
+     * @return human
+     */
     public Human addHuman(String info) {
         String name = ConsoleHelper.readString(info);
         Human human = new Human(name);
-        if (!listHumans.contains(human)) {
-            listHumans.add(human);
+        if (!humans.contains(human)) {
+            humans.add(human);
         } else {
-            human = addHuman("Такой человек уже зарегестрирован, попробуйте ещё раз:");
+            human = addHuman("Такой человек уже зарегестрирован, попробуйте задать другое имя: ");
         }
         return human;
     }
 
+    /**
+     * Стартует процесс соревнования.
+     */
     public void start() {
         while (tour <= MAX_TOUR) {
-            Collections.sort(listHumans);
+            Collections.sort(humans);
             startTour();
             tour++;
         }
-        Collections.sort(listHumans);
+        Collections.sort(humans);
         printListHumans();
     }
 
+    /**
+     * Стартует следующий тур соревнования.
+     */
     private void startTour() {
         System.out.println("Тур " + tour);
         printListHumans();
         generatePair();
         printListPairOfTour();
-        for (int i = countPlayedPair; i < listPairs.size(); i++) {
-            listPairs.get(i).play();
+        for (int i = countPlayedPair; i < pairs.size(); i++) {
+            pairs.get(i).play();
         }
-        countPlayedPair = listPairs.size();
+        countPlayedPair = pairs.size();
     }
 
     /**
-     * Пары генерируются на основе их рейтинга(количества набранных очков)
+     * Пары генерируются на основе количества набранных очков.
      * Первостепенная задача определить лидеров. Поэтому:
-     * Участники с более высоким рейтингом в первую очередь оревнуются с теми у кого тоже высокий рейтинг.
-     * Во вторую очередь соревнуются с теми у кого рейтинг чуть ниже.
-     * Два участники встречаются лишь однажды.
-     * Если количество боцов нечетное или если в конце списка образуются бойцы которые уже встречались друг с другом,
+     * - Участники с более высоким рейтингом в первую очередь соревнуются с теми, у кого тоже высокий рейтинг.
+     * Если количество бойцов нечетное или если в конце списка образуются бойцы которые уже встречались друг с другом,
      * и невозможно сгенерировать пары, то в таких случаях боец получает бонусные балы и переходит с ледующий тур.
-     * Учесть нечетное количество бойцов!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * Для корректного отображения статистики, в таком случае используется ненастоящий противник - Bot.
+     *
+     * @see Bot
+     * @see PairHuman
+     * @see ExceptionGeneratePair
      */
     private void generatePair() {
-        List<Human> tempList = new ArrayList<>(listHumans);
+        List<Human> tempList = new ArrayList<>(humans);
         int k = 1;
         int i = 0;
         while (tempList.size() > 0) {
             try {
-                PairHuman pairHuman = new PairHuman(tempList.get(i), tempList.get(k));
+                PairHuman pairHuman = new PairHuman(tempList.get(i), tempList.get(k), this);
                 addPair(pairHuman);
                 //System.out.println("Добавили) - >>>" + pairHuman);
                 tempList.remove(k);
@@ -89,7 +124,7 @@ public class Tournament {
                 k++;
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("Нету возможности создать пару c " + tempList.get(i) + ", он пропускает тур!");
-                tempList.add(new Bot());//чтобы отобразить результаты используем костыль бот - мнимый противник
+                tempList.add(new Bot());
             }
         }
     }
@@ -102,29 +137,29 @@ public class Tournament {
      * @throws ExceptionGeneratePair бросается когда пара уже внесена в список.
      */
     public void addPair(PairHuman pair) throws ExceptionGeneratePair {
-        if (!listPairs.contains(pair)) {
-            listPairs.add(pair);
+        if (!pairs.contains(pair)) {
+            pairs.add(pair);
         } else {
             throw new ExceptionGeneratePair();
         }
+    }
+
+    public int getROUND_FOR_WIN() {
+        return ROUND_FOR_WIN;
     }
 
     /**
      * Выводит список пар конкретного тура
      */
     private void printListPairOfTour() {
-        for (int i = countPlayedPair; i < listPairs.size(); i++) {
-            System.out.println(listPairs.get(i));
+        for (int i = countPlayedPair; i < pairs.size(); i++) {
+            System.out.println(pairs.get(i));
         }
     }
 
     private void printListHumans() {
-        for (Human human: listHumans) {
+        for (Human human: humans) {
             System.out.println(human);
         }
-    }
-
-    public List<Human> getListHumans() {
-        return listHumans;
     }
 }
