@@ -29,10 +29,7 @@ public class PairHuman {
                 human1.addPoint();
                 win = true;
             } else {
-                while ((score = ConsoleHelper.readInt("Введите цифру 1, если победил первый боец, иначе введите 0:")) != 0
-                        && score != 1) {
-                    System.out.println("Неверный ввод результата раунда.");
-                }
+                score = metod();
                 if (score == 1) {
                     human1.addPoint();
                 } else {
@@ -45,6 +42,16 @@ public class PairHuman {
         human2.addScores(human2.getCurrentScoreOfRound());
     }
 
+    private int metod() {
+        int score;
+        score = ConsoleHelper.readInt("Введите цифру 1, если победил первый боец, иначе введите 0:");
+        if (score != tournament.getPOINT_LOSS() && score != tournament.getPOINT_VICTORY()) {
+            System.out.println("Неверный ввод результата раунда.");
+            score = metod();
+        }
+        return score;
+    }
+
     /**
      * @return true если один из участников раунда достиг необходимого количества побед ROUND_FOR_WIN.
      * @see Tournament  - ROUND_FOR_WIN
@@ -53,7 +60,8 @@ public class PairHuman {
         if (win || human1.getCurrentScoreOfRound() == tournament.getROUND_FOR_WIN()
                 || human2.getCurrentScoreOfRound() == tournament.getROUND_FOR_WIN()) {
             return true;
-        } else return false;
+        }
+        return false;
     }
 
     @Override

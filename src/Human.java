@@ -1,6 +1,3 @@
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by 1 on 02.01.2018.
  * Участник.
@@ -8,7 +5,6 @@ import java.util.Map;
 public class Human implements Comparable {
     protected String name;
     private int score = 0;
-    private Map<Human, Boolean> map = new HashMap<>();
     private int currentScoreOfRound = 0;
 
     public Human() {

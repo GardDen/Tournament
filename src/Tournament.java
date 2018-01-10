@@ -27,7 +27,8 @@ import java.util.List;
 public class Tournament {
     private final int ROUND_FOR_WIN = 2;
     private final int MAX_TOUR = 4;
-
+    private final int POINT_VICTORY = 1;
+    private final int POINT_LOSS = 0;
     private int countPlayedPair = 0;
     private int tour;
     private String name;
@@ -142,6 +143,15 @@ public class Tournament {
         } else {
             throw new ExceptionGeneratePair();
         }
+    }
+
+
+    public int getPOINT_VICTORY() {
+        return POINT_VICTORY;
+    }
+
+    public int getPOINT_LOSS() {
+        return POINT_LOSS;
     }
 
     public int getROUND_FOR_WIN() {
