@@ -11,7 +11,7 @@ import java.util.List;
  * 4 добавление людей опоздавших посреди турнира
  *
  * Created by 1 on 02.01.2018.
- * Соревновения проходят на подобие швейцарской системы в MAX_TOUR туров.
+ * Соревновения проходят на подобие швейцарской системы в numberOfTour туров.
  * Участники Human встречаются и между ними проводятся раунды, пока один из участников не наберет нужного
  * числа побед ROUND_FOR_WIN. В случае победы в раунде участнику начисляется одно очко, при поражении 0 очков.
  * <p>
@@ -19,7 +19,7 @@ import java.util.List;
  *     Два участника встречаются между собой лишь однажды.
  * </p>
  *
- * Чем больше значение MAX_TOUR, тем выше эффективность определения рейтинга участников соревнования.
+ * Чем больше значение numberOfTour, тем выше эффективность определения рейтинга участников соревнования.
  *
  * @see Human
  * @see PairHuman
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class Tournament {
     private final int ROUND_FOR_WIN = 2;
-    private final int MAX_TOUR = 4;
+    private int numberOfTour = 4;
     private final int POINT_VICTORY = 1;
     private final int POINT_LOSS = 0;
     private int countPlayedPair = 0;
@@ -74,7 +74,7 @@ public class Tournament {
      * Стартует процесс соревнования.
      */
     public void start() {
-        while (tour <= MAX_TOUR) {
+        while (tour <= numberOfTour) {
             Collections.sort(humans);
             startTour();
             tour++;
@@ -111,6 +111,7 @@ public class Tournament {
                 "1. Добавить участника.\n" +
                 "2. Удалить участника.\n" +
                 "3. Оставить без изменений\n" +
+                "4. Добавить ещё один тур\n" +
                 "Введите номер пункта: ");
         switch (check) {
             case 1:
@@ -126,6 +127,9 @@ public class Tournament {
                 check();
                 break;
             case 3:
+                break;
+            case 4:
+                numberOfTour++;
                 break;
             default:
                 System.out.println("Такого пункта не существует, попробуйте ещё раз");
