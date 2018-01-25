@@ -107,19 +107,23 @@ public class Tournament {
      * Дает возможность удалить участника из списка или добавить нового участника.
      */
     private void check() {
-        int check = ConsoleHelper.readInt("Тур " + tour + "завершен. \n" +
-                "Требуются внесение изменений в список участников? Введите\n" +
+        int check = ConsoleHelper.readInt("Требуются внесение изменений в список участников?\n" +
                 "1. Добавить участника.\n" +
                 "2. Удалить участника.\n" +
-                "3. Оставить без изменений\n");
+                "3. Оставить без изменений\n" +
+                "Введите номер пункта: ");
         switch (check) {
             case 1:
                 initHumans(1);
+                //Добавленному человеку добавляем бонусные очки, за пропущенные встречи
+                humans.get(humans.size() - 1).addScores(tour);
                 System.out.println("провера всех списков и коэффициентов и зависимостей, в связи с добавлением " +
                         "человека");
+                check();
                 break;
             case 2:
                 removeHuman();
+                check();
                 break;
             case 3:
                 break;
@@ -134,10 +138,11 @@ public class Tournament {
      * plug
      */
     private void removeHuman() {
-        System.out.println("провера всех списков и коэффициентов и зависимостей, в связи с удалением " +
+        System.out.println("Провера всех списков и коэффициентов и зависимостей, в связи с удалением " +
                 "человека");
-        String humanName = ConsoleHelper.readString("Введите имя человека которрого желаете исключить из сиска");
+        String humanName = ConsoleHelper.readString("Введите имя участника, которого желаете исключить из списка: ");
         humans.remove(new Human(humanName));
+        System.out.println(humanName + " удален.");
     }
 
     /**
