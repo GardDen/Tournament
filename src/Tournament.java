@@ -8,6 +8,7 @@ import java.util.List;
  * 1 бонусный бал сколько?  метод play
  * 2 GUI
  * 3 Удаление людей во время турнира.
+ * 4 добавление людей опоздавших посреди турнира
  *
  * Created by 1 on 02.01.2018.
  * Соревновения проходят на подобие швейцарской системы в MAX_TOUR туров.
@@ -33,7 +34,7 @@ public class Tournament {
     private int tour;
     private String name;
     private Date date;
-    private List<Human> humans;
+    private List<Human> humans = new ArrayList<>();
     private List<PairHuman> pairs = new ArrayList<>();
     
     public Tournament(String name) {
@@ -48,7 +49,6 @@ public class Tournament {
      * @param countHumans
      */
     public void initHumans(int countHumans) {
-        humans = new ArrayList<>(countHumans);
         for (int i = 0; i < countHumans; i++) {
             addHuman("Введите имя(фамилию и имя) участника турнира: ");
         }
@@ -85,6 +85,8 @@ public class Tournament {
 
     /**
      * Стартует следующий тур соревнования.
+     * В этом методе используется переменная countPlayedPair, для того чтобы цикл работал в очередном туре только с
+     * парами которые ещё не встречались.
      */
     private void startTour() {
         System.out.println("Тур " + tour);
@@ -95,6 +97,47 @@ public class Tournament {
             pairs.get(i).play();
         }
         countPlayedPair = pairs.size();
+        check();
+
+
+    }
+
+    /**
+     * Этот медот позволяет внести изменения в процесс турнира в конце тура.
+     * Дает возможность удалить участника из списка или добавить нового участника.
+     */
+    private void check() {
+        int check = ConsoleHelper.readInt("Тур " + tour + "завершен. \n" +
+                "Требуются внесение изменений в список участников? Введите\n" +
+                "1. Добавить участника.\n" +
+                "2. Удалить участника.\n" +
+                "3. Оставить без изменений\n");
+        switch (check) {
+            case 1:
+                initHumans(1);
+                System.out.println("провера всех списков и коэффициентов и зависимостей, в связи с добавлением " +
+                        "человека");
+                break;
+            case 2:
+                removeHuman();
+                break;
+            case 3:
+                break;
+            default:
+                System.out.println("Такого пункта не существует, попробуйте ещё раз");
+                check();
+                break;
+        }
+    }
+
+    /**
+     * plug
+     */
+    private void removeHuman() {
+        System.out.println("провера всех списков и коэффициентов и зависимостей, в связи с удалением " +
+                "человека");
+        String humanName = ConsoleHelper.readString("Введите имя человека которрого желаете исключить из сиска");
+        humans.remove(new Human(humanName));
     }
 
     /**
@@ -117,7 +160,6 @@ public class Tournament {
             try {
                 PairHuman pairHuman = new PairHuman(tempList.get(i), tempList.get(k), this);
                 addPair(pairHuman);
-                //System.out.println("Добавили) - >>>" + pairHuman);
                 tempList.remove(k);
                 tempList.remove(i);
                 k = i + 1;
